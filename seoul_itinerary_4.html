@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Seoul · Jul 4–15</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F4F3EE; --surface:#FFFFFF; --ink:#16161D; --muted:#6B6B72; --faint:#9A9A9F;
+    --line:#E6E4DD; --line2:#EFEEE8; --accent:#FF2D2D;
+    --nightlife:#E0218A; --culture:#7C5CFC; --adventure:#0FB5A0; --food:#F59E0B;
+    --shopping:#2E7DF6; --chill:#8A8A93; --logistics:#475569;
+    --ok:#16A34A; --warn:#F59E0B; --urgent:#FF2D2D;
+    --disp:'Space Grotesk',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'Space Mono',ui-monospace,monospace;
+    --r:14px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+    padding-bottom:90px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:var(--disp);margin:0;font-weight:700;letter-spacing:-0.02em;}
+  button{font-family:var(--body);cursor:pointer;border:none;background:none;color:inherit;}
+  .mono{font-family:var(--mono);}
+
+  /* Top bar */
+  header{position:sticky;top:0;z-index:30;background:var(--ink);color:#fff;padding:14px 16px 12px;
+    padding-top:max(14px,env(safe-area-inset-top));}
+  .h-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .h-title{font-family:var(--disp);font-size:20px;font-weight:700;line-height:1.05;letter-spacing:-0.03em;}
+  .h-title .sub{display:block;font-family:var(--mono);font-size:11px;font-weight:400;color:#B9B9C2;letter-spacing:0.04em;margin-top:3px;}
+  .h-total{text-align:right;flex-shrink:0;}
+  .h-total .lbl{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;color:#9A9AA5;text-transform:uppercase;}
+  .h-total .amt{font-family:var(--mono);font-size:18px;font-weight:700;color:#fff;line-height:1.1;}
+  .h-total .pp{font-family:var(--mono);font-size:10px;color:#FF6B6B;}
+
+  /* View toggle */
+  .views{display:flex;gap:6px;margin-top:12px;}
+  .view-btn{flex:1;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+    padding:8px 10px;border-radius:9px;background:rgba(255,255,255,0.08);color:#C9C9D2;transition:.15s;}
+  .view-btn.on{background:var(--accent);color:#fff;}
+
+  /* Day rail */
+  .rail{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+    display:flex;gap:7px;overflow-x:auto;padding:11px 16px;scrollbar-width:none;scroll-snap-type:x proximity;}
+  .rail::-webkit-scrollbar{display:none;}
+  .daychip{flex-shrink:0;scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);
+    border-radius:11px;padding:7px 12px;min-width:62px;text-align:center;transition:.15s;}
+  .daychip .dn{font-family:var(--disp);font-size:13px;font-weight:700;line-height:1;}
+  .daychip .dd{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:3px;letter-spacing:0.02em;}
+  .daychip .dc{font-family:var(--mono);font-size:8.5px;margin-top:2px;color:var(--faint);}
+  .daychip.on{background:var(--ink);border-color:var(--ink);}
+  .daychip.on .dn{color:#fff;} .daychip.on .dd{color:#C9C9D2;} .daychip.on .dc{color:#FF6B6B;}
+
+  /* Category filter */
+  .filters{display:flex;gap:6px;overflow-x:auto;padding:10px 16px 4px;scrollbar-width:none;}
+  .filters::-webkit-scrollbar{display:none;}
+  .fchip{flex-shrink:0;font-size:11px;font-weight:600;padding:5px 11px;border-radius:20px;border:1px solid var(--line);
+    background:var(--surface);color:var(--muted);display:flex;align-items:center;gap:5px;transition:.12s;}
+  .fchip .dot{width:7px;height:7px;border-radius:50%;}
+  .fchip.off{opacity:0.35;}
+
+  main{padding:6px 14px 20px;max-width:680px;margin:0 auto;}
+
+  /* Day head */
+  .dayhead{display:flex;justify-content:space-between;align-items:flex-end;padding:16px 4px 8px;}
+  .dayhead .l .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);}
+  .dayhead .l h2{font-size:26px;margin-top:2px;}
+  .dayhead .l .date{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:2px;}
+  .dayhead .r{text-align:right;}
+  .dayhead .r .lbl{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);}
+  .dayhead .r .v{font-family:var(--mono);font-size:16px;font-weight:700;}
+
+  /* Slot */
+  .slot{margin-top:14px;}
+  .slot-h{display:flex;align-items:center;gap:8px;margin:0 4px 8px;}
+  .slot-h .t{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);}
+  .slot-h .ln{flex:1;height:1px;background:var(--line);}
+  .slot-add{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--accent);letter-spacing:0.04em;padding:3px 7px;border-radius:7px;border:1px dashed transparent;}
+  .slot-add:hover{border-color:var(--accent);}
+
+  /* Card */
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);margin-bottom:9px;
+    overflow:hidden;position:relative;transition:.12s;}
+  .card:active{transform:scale(0.995);}
+  .card .bar{position:absolute;left:0;top:0;bottom:0;width:4px;}
+  .card-main{display:flex;align-items:flex-start;gap:11px;padding:13px 14px 13px 16px;}
+  .card-time{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink);flex-shrink:0;width:46px;line-height:1.3;}
+  .card-time .ampm{display:block;font-size:9px;font-weight:400;color:var(--faint);}
+  .card-body{flex:1;min-width:0;}
+  .card-cat{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+  .card-cat .dot{width:7px;height:7px;border-radius:50%;}
+  .card-cat .nm{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+  .card-title{font-family:var(--disp);font-size:15.5px;font-weight:500;line-height:1.2;letter-spacing:-0.01em;}
+  .card-meta{display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;}
+  .badge{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;
+    padding:3px 7px;border-radius:6px;}
+  .b-booked{background:#E7F6ED;color:var(--ok);} .b-now{background:#FFE9E9;color:var(--urgent);}
+  .b-2wk{background:#FEF3DC;color:#B97509;} .b-walk{background:#EEEEF0;color:var(--muted);}
+  .card-cost{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--ink);flex-shrink:0;}
+  .card-cost.free{color:var(--faint);font-weight:400;}
+  .chev{flex-shrink:0;color:var(--faint);font-size:18px;transition:.2s;align-self:center;}
+  .card.open .chev{transform:rotate(90deg);}
+
+  .card-detail{max-height:0;overflow:hidden;transition:max-height .25s ease;}
+  .card.open .card-detail{max-height:600px;}
+  .detail-inner{padding:0 16px 14px 16px;border-top:1px solid var(--line2);margin-top:0;}
+  .detail-inner p{margin:11px 0 0;font-size:13.5px;color:#3a3a42;line-height:1.55;}
+  .detail-inner .tip{margin-top:9px;font-size:12.5px;color:var(--muted);padding:9px 11px;background:var(--bg);border-radius:9px;}
+  .detail-inner .tip b{color:var(--ink);font-weight:600;}
+  .acts{display:flex;gap:7px;margin-top:12px;}
+  .act{flex:1;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:9px;border-radius:9px;text-align:center;border:1px solid var(--line);color:var(--ink);background:var(--surface);}
+  .act.move:hover{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .act.rem:hover{border-color:var(--accent);background:var(--accent);color:#fff;}
+
+  .empty{text-align:center;padding:26px 12px;color:var(--faint);font-size:13px;}
+
+  /* Flex / checklist sections */
+  .section-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-top:14px;}
+  .section-card h3{font-size:17px;margin-bottom:3px;}
+  .section-card .desc{font-size:12.5px;color:var(--muted);margin-bottom:10px;}
+  .flex-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid var(--line2);}
+  .flex-item:first-of-type{border-top:none;}
+  .flex-item .bar{width:4px;align-self:stretch;border-radius:3px;flex-shrink:0;}
+  .flex-item .fi-body{flex:1;min-width:0;}
+  .flex-item .fi-title{font-family:var(--disp);font-size:14.5px;font-weight:500;}
+  .flex-item .fi-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+  .flex-item .fi-add{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:8px 12px;border-radius:9px;border:1px solid var(--line);flex-shrink:0;}
+  .flex-item .fi-add:hover{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  /* Checklist */
+  .ck-group{margin-top:16px;}
+  .ck-group > .gh{display:flex;align-items:center;gap:8px;margin:0 2px 8px;}
+  .ck-group .gh .g-dot{width:9px;height:9px;border-radius:50%;}
+  .ck-group .gh .g-t{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;}
+  .ck-row{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--line);
+    border-radius:11px;padding:12px 14px;margin-bottom:7px;}
+  .ck-box{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;display:flex;
+    align-items:center;justify-content:center;font-size:14px;color:#fff;transition:.12s;}
+  .ck-row.done .ck-box{background:var(--ok);border-color:var(--ok);}
+  .ck-row.done .ck-title{text-decoration:line-through;color:var(--faint);}
+  .ck-body{flex:1;min-width:0;}
+  .ck-title{font-family:var(--disp);font-size:14.5px;font-weight:500;}
+  .ck-where{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:1px;}
+  .ck-cost{font-family:var(--mono);font-size:12px;font-weight:700;flex-shrink:0;}
+
+  /* Modal */
+  .scrim{position:fixed;inset:0;background:rgba(10,10,14,0.55);z-index:50;display:none;align-items:flex-end;
+    justify-content:center;}
+  .scrim.on{display:flex;}
+  .sheet{background:var(--surface);width:100%;max-width:680px;border-radius:20px 20px 0 0;padding:18px 18px 28px;
+    padding-bottom:max(28px,env(safe-area-inset-bottom));max-height:82vh;overflow-y:auto;animation:up .22s ease;}
+  @keyframes up{from{transform:translateY(100%);}to{transform:translateY(0);}}
+  .sheet h3{font-size:18px;margin-bottom:3px;}
+  .sheet .s-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
+  .m-label{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;
+    color:var(--muted);margin:14px 0 8px;}
+  .m-days{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .m-day{border:1px solid var(--line);border-radius:10px;padding:8px 4px;text-align:center;transition:.12s;}
+  .m-day .n{font-family:var(--disp);font-size:14px;font-weight:700;}
+  .m-day .d{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;}
+  .m-day.sel{background:var(--ink);border-color:var(--ink);} .m-day.sel .n{color:#fff;} .m-day.sel .d{color:#FF6B6B;}
+  .m-slots{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+  .m-slot{border:1px solid var(--line);border-radius:10px;padding:11px 4px;text-align:center;
+    font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);transition:.12s;}
+  .m-slot.sel{background:var(--accent);border-color:var(--accent);color:#fff;}
+  .m-confirm{width:100%;margin-top:18px;background:var(--ink);color:#fff;font-family:var(--disp);font-weight:700;
+    font-size:15px;padding:14px;border-radius:12px;transition:.12s;}
+  .m-confirm:disabled{opacity:0.4;}
+  .m-cancel{width:100%;margin-top:8px;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--muted);padding:10px;}
+
+  /* Bottom bar */
+  .botbar{position:fixed;bottom:0;left:0;right:0;z-index:25;background:var(--surface);border-top:1px solid var(--line);
+    display:flex;padding:8px 14px;padding-bottom:max(8px,env(safe-area-inset-bottom));gap:8px;max-width:680px;margin:0 auto;}
+  .botbar .bb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;border-radius:11px;transition:.12s;}
+  .botbar .bb .ic{font-size:19px;line-height:1;}
+  .botbar .bb .lb{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);}
+  .botbar .bb.on{background:var(--bg);} .botbar .bb.on .lb{color:var(--ink);}
+
+  .hidden{display:none !important;}
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important;}}
+  :focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+
+  /* save status */
+  .save-row{display:flex;justify-content:flex-end;margin-top:9px;}
+  .save-pill{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;
+    padding:3px 10px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--surface);
+    cursor:pointer;transition:.15s;user-select:none;}
+  .save-pill.pending,.save-pill.saving{color:#8a6100;border-color:#e7c84d;background:#fff8e1;}
+  .save-pill.saved,.save-pill.idle{color:#15803d;border-color:#a7e0ba;background:#eafaef;}
+  .save-pill.error{color:#b3261e;border-color:#f1b3af;background:#fde8e7;}
+  .save-pill.local{color:var(--muted);border-style:dashed;}
+  .save-pill.off{color:#b3261e;border-color:#f1b3af;border-style:dashed;background:#fde8e7;}
+  .save-row{align-items:center;gap:7px;}
+  .save-btn{font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;
+    padding:3px 9px;border-radius:20px;border:1px solid var(--line);color:var(--muted);background:var(--surface);cursor:pointer;}
+  .save-btn:hover{border-color:var(--ink);color:var(--ink);}
+
+  /* per-activity notes */
+  .note-wrap{margin-top:13px;}
+  .note-lbl{display:block;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .note-field{width:100%;box-sizing:border-box;min-height:58px;resize:vertical;font-family:inherit;font-size:14px;
+    line-height:1.5;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;
+    padding:10px 12px;outline:none;transition:border-color .15s;}
+  .note-field:focus{border-color:var(--ink);}
+  .note-field::placeholder{color:var(--faint);}
+
+  /* activity editor */
+  .ef-row{margin-bottom:13px;}
+  .ef-label{display:block;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+  .ef-input,.ef-select,.ef-area{width:100%;box-sizing:border-box;font-family:inherit;font-size:14.5px;color:var(--ink);
+    background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;outline:none;transition:border-color .15s;}
+  .ef-input:focus,.ef-select:focus,.ef-area:focus{border-color:var(--ink);}
+  .ef-area{resize:vertical;min-height:54px;line-height:1.5;}
+  .ef-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .ef-check{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink);margin-top:2px;}
+  .ef-check input{width:18px;height:18px;}
+  .ef-link{width:100%;margin-top:9px;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:0.06em;
+    text-transform:uppercase;background:none;border:1px dashed var(--line);border-radius:11px;padding:11px;color:var(--muted);}
+  .act.edit{border-color:var(--ink);color:var(--ink);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-top">
+    <div class="h-title">SEOUL<span class="sub">11 NIGHTS · JUL 4–15 2026 · 2 PAX</span></div>
+    <div class="h-total">
+      <div class="lbl">Trip total</div>
+      <div class="amt" id="grandTotal">$0</div>
+      <div class="pp" id="ppTotal">$0 pp</div>
+    </div>
+  </div>
+  <div class="views">
+    <button class="view-btn on" data-view="itinerary" onclick="setView('itinerary')">Itinerary</button>
+    <button class="view-btn" data-view="ideas" onclick="setView('ideas')">Flex ideas</button>
+    <button class="view-btn" data-view="checklist" onclick="setView('checklist')">Bookings</button>
+  </div>
+  <div class="save-row">
+    <span id="saveStatus" class="save-pill idle" onclick="saveNow()" title="Sync status. Tap to force a save now.">Saved</span>
+    <button class="save-btn" onclick="pullCloud()" title="Pull the latest version saved from any device">↻ Reload</button>
+    <button class="save-btn" onclick="exportJSON()" title="Download a backup file of your whole trip">⤓ Backup</button>
+    <button class="save-btn" onclick="document.getElementById('importFile').click()" title="Restore your trip from a backup file">↑ Restore</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importJSON(this)">
+  </div>
+</header>
+
+<div class="rail" id="rail"></div>
+<div class="filters" id="filters"></div>
+
+<main>
+  <div id="itineraryView"></div>
+  <div id="ideasView" class="hidden"></div>
+  <div id="checklistView" class="hidden"></div>
+</main>
+
+<div class="botbar">
+  <button class="bb on" id="bb-prev" onclick="stepDay(-1)"><span class="ic">‹</span><span class="lb">Prev day</span></button>
+  <button class="bb" onclick="setView('checklist')"><span class="ic">✓</span><span class="lb">Bookings</span></button>
+  <button class="bb" onclick="setView('ideas')"><span class="ic">＋</span><span class="lb">Add idea</span></button>
+  <button class="bb" id="bb-next" onclick="stepDay(1)"><span class="ic">›</span><span class="lb">Next day</span></button>
+</div>
+
+<div class="scrim" id="scrim" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+const DAYS = [
+  {n:1, dow:'Sat', date:'Jul 4', tag:'Land + first night'},
+  {n:2, dow:'Sun', date:'Jul 5', tag:'Thrift + river party'},
+  {n:3, dow:'Mon', date:'Jul 6', tag:'Hostel + Hongdae'},
+  {n:4, dow:'Tue', date:'Jul 7', tag:'Sunrise hike + Euljiro'},
+  {n:5, dow:'Wed', date:'Jul 8', tag:'DMZ + Myeongdong'},
+  {n:6, dow:'Thu', date:'Jul 9', tag:'Old Seoul + baseball'},
+  {n:7, dow:'Fri', date:'Jul 10', tag:'Shamans + big night'},
+  {n:8, dow:'Sat', date:'Jul 11', tag:'Mountains'},
+  {n:9, dow:'Sun', date:'Jul 12', tag:'Return + tower + spa'},
+  {n:10, dow:'Mon', date:'Jul 13', tag:'Surf + yacht'},
+  {n:11, dow:'Tue', date:'Jul 14', tag:'Mega day + finale'},
+  {n:12, dow:'Wed', date:'Jul 15', tag:'Departure'},
+];
+const SLOTS = [
+  {k:'morning', t:'Morning'},
+  {k:'afternoon', t:'Afternoon'},
+  {k:'evening', t:'Evening'},
+  {k:'night', t:'Night'},
+];
+const CATS = {
+  nightlife:{nm:'Nightlife', c:'var(--nightlife)'},
+  culture:{nm:'Culture', c:'var(--culture)'},
+  adventure:{nm:'Adventure', c:'var(--adventure)'},
+  food:{nm:'Food', c:'var(--food)'},
+  shopping:{nm:'Shopping', c:'var(--shopping)'},
+  chill:{nm:'Chill', c:'var(--chill)'},
+  logistics:{nm:'Logistics', c:'var(--logistics)'},
+};
+const BADGE = {
+  booked:{cls:'b-booked', t:'Booked'},
+  now:{cls:'b-now', t:'Book now'},
+  twk:{cls:'b-2wk', t:'Book ~2wk'},
+  walk:{cls:'b-walk', t:'Walk-in'},
+};
+
+let uid = 1;
+const A = (o)=>Object.assign({id:'a'+(uid++)}, o);
+
+let acts = [
+  // DAY 1 — Land + first night
+  A({day:1, slot:'morning', time:'10:00', cat:'logistics', book:'walk', cost:0, title:'\u2614 Monsoon mode \u2014 read first',
+     desc:'Early\u2013mid July is peak jangma (rainy season): expect rain on roughly half your days, 27\u201330\u00b0C, and brutal humidity (feels like high 30s). Plan each morning around the radar, not the schedule \u2014 check the KMA 10-day forecast a few days before each outdoor anchor.',
+     tip:'Daily kit: packable rain shell, quick-dry clothes, small towel, phone in a zip bag. Wet-day indoor bench: Olive Young / COEX, Yongsan electronics, Dragon Hill jjimjilbang, noraebang, PC bang, Seongsu cafes, the thrift halls. Outdoor anchors that survive rain anyway: DMZ, river cruise, surf pool, jjimjilbang, baseball (check for rainouts).'}),
+  A({day:1, slot:'evening', time:'20:00', cat:'logistics', book:'walk', cost:25, title:'Land + AREX train to Yongsan',
+     desc:'Land at Incheon ~8pm, clear immigration, grab a T-Money card at the convenience store, then take the AREX airport railroad straight to Seoul Station / Yongsan. Faster and cheaper than the limousine bus and it runs late. ~60 min.',
+     tip:'Have Naver Maps, Kakao T and Papago downloaded with a card loaded BEFORE you land. Confirm the AREX last-train time for your landing; if you miss it, Kakao Taxi or the 6001 limousine bus is the backup.'}),
+  A({day:1, slot:'evening', time:'21:30', cat:'logistics', book:'booked', cost:0, title:'Check in \u00b7 Novotel Suites Yongsan',
+     desc:'Your bed for nights 1\u20132. Apartment-style room in the Seoul Dragon City complex, 15 min from Itaewon. Drop bags, quick shower, change, go.'}),
+  A({day:1, slot:'night', time:'22:00', cat:'food', book:'walk', cost:80, title:'Kyochon Pilbang dinner',
+     desc:'Speakeasy-style fried chicken in Itaewon, hidden behind a giant paintbrush door. Brush your own sauce. Perfect first-night hit.',
+     tip:'From Itaewon Station Exit 1, look for the hanging paintbrush, not a sign. Confirm the exact name/booking on Naver \u2014 speakeasy spots rebrand; have a backup chicken-and-beer place pinned.'}),
+  A({day:1, slot:'night', time:'23:30', cat:'nightlife', book:'walk', cost:60, title:'Itaewon first night out',
+     desc:'Open on the Bungalow rooftop, then feel out Itaewon \u2014 World Food Street, the hills, wherever the energy is. No 4am alarm tomorrow, so enjoy it, but you just got off a plane: hydrate between rounds and let tomorrow start late.'}),
+
+  // DAY 2 — Thrift + river party (fun acclimatise, no dawn hike)
+  A({day:2, slot:'morning', time:'11:00', cat:'food', book:'walk', cost:15, title:'Haejang-guk hangover soup',
+     desc:'Sleep in, then the Korean cure: hangover soup. Bone broth, the works. Resets you for the day.'}),
+  A({day:2, slot:'afternoon', time:'14:00', cat:'shopping', book:'walk', cost:200, title:'Dongmyo + Hwanghak-dong thrift',
+     desc:'Secondhand premium brands for next to nothing. Skip the floor piles, hit the curated indoor shops (Seoul Vintage, Ppogeuri). Hwanghak-dong Goblin Market next door for vintage cameras and LPs.',
+     tip:'Bring cash. The $200 is a spend budget, not a fixed cost \u2014 set your own cap. Get a receipt anywhere formal for the airport tax refund. All indoor, so a solid rainy-day pick.'}),
+  A({day:2, slot:'evening', time:'18:00', cat:'food', book:'walk', cost:30, title:'Yeouido Han River chimaek',
+     desc:'Convenience-store fried chicken and cold beer on the grass by the river at golden hour \u2014 order delivery straight to the park on the app. Exactly what young Seoul does on a summer evening.',
+     tip:'Rain backup: if it is bucketing, move the chimaek to a Yeouido pub or post up under the bridge shelters like the locals do.'}),
+  A({day:2, slot:'evening', time:'19:30', cat:'chill', book:'now', cost:60, title:'E-Land Moonlight Cruise',
+     desc:'Han River cruise, live music, skyline lighting up, Banpo Bridge rainbow fountain if it is running. Cheesy in the best way.',
+     tip:'Book on Klook 1\u20132 weeks ahead, grab deck/window seats. Covered deck means it runs rain or shine \u2014 a safe monsoon anchor.'}),
+  A({day:2, slot:'night', time:'22:00', cat:'nightlife', book:'walk', cost:40, title:'Hongdae first taste',
+     desc:'Ease into Hongdae \u2014 buskers on the main drag, a cheap bar, a pojangmacha tent. Scout it for the bigger nights coming. Keep it loose; the real benders are Day 3, 7 and 11.'}),
+
+  // DAY 3 — Hostel move + Hongdae social (meet your crew; keep it to ~1:30 so Day 4 sunrise is safe)
+  A({day:3, slot:'morning', time:'11:00', cat:'logistics', book:'now', cost:0, title:'Move to Time Travelers Hostel',
+     desc:'Check out of Novotel, taxi to Time Travelers Party Hostel in Hongdae. This is your home base for nights 3\u20137 and 9\u201311. BOOK IT NOW \u2014 Hongdae party hostels sell out in peak-season July.',
+     tip:'Private twin if you want to actually sleep, a dorm if you want to meet people fast. Lock it before the trip; do not leave 8 nights to chance.'}),
+  A({day:3, slot:'afternoon', time:'14:00', cat:'culture', book:'twk', cost:90, pp:true, title:'K-pop dance class',
+     desc:'90 mins with a pro who has danced with BTS or BLACKPINK. You walk out with a video. Genuinely fun for two guys, not cringe.',
+     tip:'Real K-Pop Dance Studio, Hongdae. Book on Klook 24h+ ahead. ~$90 each.'}),
+  A({day:3, slot:'afternoon', time:'16:00', cat:'nightlife', book:'walk', cost:30, title:'Noraebang',
+     desc:'Private karaoke room straight after the dance class to butcher the song you just learned. Beers in. Pure warm-up energy.'}),
+  A({day:3, slot:'evening', time:'19:00', cat:'food', book:'walk', cost:40, title:'Hostel BBQ + soju with the crew',
+     desc:'Time Travelers runs in-house Korean BBQ and soju nights \u2014 this is where you meet your trip crew within hours. Say yes, swap plans, build the squad you roll with all week.'}),
+  A({day:3, slot:'night', time:'22:00', cat:'nightlife', book:'walk', cost:50, title:'Hongdae bars with the crew',
+     desc:'Out with the hostel crew \u2014 bars, busking energy, maybe a club. Wrap this one around 1\u20131:30am: tomorrow is the Bukhansan sunrise mission and you do not want to scramble wet granite on no sleep. The huge nights are Day 7 and Day 11.'}),
+
+  // DAY 4 — Bukhansan sunrise (moved here, weather-flex) + electronics + Euljiro
+  A({day:4, slot:'morning', time:'04:30', cat:'adventure', book:'walk', cost:50, title:'Bukhansan sunrise hike',
+     desc:'Seoul\'s highest peak (Baegundae, 836m), bare granite scramble with steel cables on the final push. Sunrise over 10 million people. You have had a few nights to find your feet and an earlier night before, so you can actually do this safely now.',
+     tip:'WEATHER-FLEX: clear-radar mornings only. Check KMA the night before \u2014 if it is raining, the granite is lethal; swap to Day 10 morning or a clear flex slot. Kakao Taxi to the trailhead (no transport that early), headtorches, 2L water each, proper runners.'}),
+  A({day:4, slot:'morning', time:'09:30', cat:'food', book:'walk', cost:15, title:'Base-of-mountain breakfast',
+     desc:'Big Korean breakfast at a spot near the trailhead \u2014 the reward for the climb. Then back to the hostel to nap before the afternoon.'}),
+  A({day:4, slot:'afternoon', time:'14:00', cat:'shopping', book:'walk', cost:300, title:'Yongsan electronics + I\'Park Mall',
+     desc:'Low-impact recovery afternoon. Orient at I\'Park Mall, then dig the specialist buildings for keyboards, camera gear, retro consoles. Bargain hard, show competing prices on your phone.',
+     tip:'$300 is a spend budget. Get receipts for the tax refund. Skip current-gen phones, no real saving. All indoor \u2014 perfect if Day 4 turns wet.'}),
+  A({day:4, slot:'evening', time:'19:00', cat:'nightlife', book:'walk', cost:50, title:'Euljiro Nogari Alley',
+     desc:'Retro-industrial district that turns into an outdoor beer hall at night \u2014 plastic stools in the street, cheap draft, dried pollack, hidden speakeasies above the hardware shops. Zero tourist gloss.',
+     tip:'Rain backup: the speakeasies and pocha indoors stay packed even in a downpour.'}),
+
+  // DAY 5 — DMZ + Myeongdong
+  A({day:5, slot:'morning', time:'07:30', cat:'culture', book:'now', cost:160, pp:true, title:'DMZ + North Korean defector',
+     desc:'Full day to the border with a live Q&A from a North Korean defector on the bus. Confronting and unforgettable. Cosmojin runs the defector tour.',
+     tip:'Book ~3 weeks out, fills fast in summer. Does NOT run Mondays (today is Wednesday, fine). Bring your passport. Runs rain or shine. ~$160 each.'}),
+  A({day:5, slot:'night', time:'18:30', cat:'food', book:'walk', cost:40, title:'Myeongdong Night Market',
+     desc:'150+ stalls after 5pm. Cheese corn dog, grilled cheese lobster, tornado potato, egg bread. This IS dinner \u2014 do not eat beforehand.',
+     tip:'Dense and partly covered, so it survives light rain.'}),
+  A({day:5, slot:'night', time:'20:00', cat:'shopping', book:'walk', cost:150, title:'Olive Young Central',
+     desc:'4-floor flagship. Korean sunscreen and skincare at half Aussie prices \u2014 Round Lab, Beauty of Joseon, COSRX. Open till midnight. Your kind of haul.',
+     tip:'Download the Olive Young app for stacking coupons. Keep receipts for the refund. Indoor \u2014 a great rainy-night dump.'}),
+  A({day:5, slot:'night', time:'21:30', cat:'culture', book:'now', cost:50, pp:true, title:'Myeongdong shooting range',
+     desc:'Fire a real Glock or Magnum in the middle of the city. 10 shots each, coached. Pure novelty, worth doing once.',
+     tip:'Book on Klook for the discount. Passport required. Indoor. ~$50 each.'}),
+
+  // DAY 6 — Old Seoul + baseball (palace hours fixed)
+  A({day:6, slot:'morning', time:'07:00', cat:'culture', book:'walk', cost:0, title:'Bukchon + Ikseon-dong early walk',
+     desc:'Beat the heat and crowds. Wander the hanok alleys of Bukchon and the cafe lanes of Ikseon-dong while they are quiet \u2014 the streets are free and open anytime (the village asks visitors to keep it down 10am\u20135pm, so early is ideal).'}),
+  A({day:6, slot:'morning', time:'08:00', cat:'food', book:'walk', cost:20, title:'Soha Salt Pond salt bread',
+     desc:'Salt-warehouse-themed bakery in the Ikseon-dong lanes. Hot salt bread on the walk; try Jayeondo next door too.',
+     tip:'Eat the salt bread HOT \u2014 the truffle and cream ones fall flat cold.'}),
+  A({day:6, slot:'morning', time:'09:00', cat:'culture', book:'walk', cost:7, title:'Gyeongbokgung Palace (9am open)',
+     desc:'The big one. Get there for the 9am opening to beat the worst crowds and the midday heat. Geunjeongjeon throne hall, Gyeonghoeru pavilion. ~90 min.',
+     tip:'June\u2013Aug hours 9:00\u201318:30, last entry 17:30, closed Tuesdays (today is Thursday, fine). Hack: rent a hanbok nearby and entry is FREE \u2014 plus it is a genuinely fun photo move. Changing of the guard ~10am.'}),
+  A({day:6, slot:'afternoon', time:'12:30', cat:'food', book:'walk', cost:50, title:'Sol Sot lunch',
+     desc:'Scorched-rice hot pot. Get the steak sotbap, mix the secret sauce, then pour broth in for crispy rice soup at the end.',
+     tip:'No Korean number? Register at the kiosk with 0000 and wait outside.'}),
+  A({day:6, slot:'afternoon', time:'14:00', cat:'culture', book:'walk', cost:0, title:'Jogyesa Temple (quick stop)',
+     desc:'Head temple of Korean Buddhism, right in the city centre \u2014 colourful lantern canopy, a working temple, 20 min and free to wander.',
+     tip:'The monk meal (balwoogongyang) is a templestay thing, not a daily walk-in freebie \u2014 if you want it, book a templestay session ahead. Otherwise just enjoy the grounds.'}),
+  A({day:6, slot:'night', time:'18:30', cat:'nightlife', book:'now', cost:60, title:'KBO baseball at Jamsil',
+     desc:'A rock concert disguised as a sport. Beer, chimaek, a custom cheer song for every player, thunder sticks all game. The best culture-plus-drinking night in Seoul.',
+     tip:'Jamsil\'s home teams are the LG Twins (red) and Doosan Bears (navy) \u2014 buy a ticket in the HOME cheering section for whoever plays that night and follow the chants. Order fried chicken to the gate, carry canned/plastic beer in. CHECK THE SCHEDULE: mid-July has the All-Star break and the team may be away \u2014 if no home game, swap to a rooftop or a Seongsu beer night.'}),
+
+  // DAY 7 — Shamans + BIG night
+  A({day:7, slot:'morning', time:'10:00', cat:'culture', book:'twk', cost:70, pp:true, title:'Inwangsan shamanism tour',
+     desc:'Guided hike to the Guksadang shrine on a mountain of active shaman sites \u2014 drums, chanting, offerings, maybe a live gut ceremony. The alive, taboo underbelly of Korean spirituality.',
+     tip:'Go guided, the context is the whole point. Book on GetYourGuide ~2 weeks out. ~$70 each. Light rain is fine; heavy rain, push it to the afternoon.'}),
+  A({day:7, slot:'afternoon', time:'13:00', cat:'culture', book:'walk', cost:12, title:'Seodaemun Prison',
+     desc:'Colonial-era prison where independence fighters were held and executed, now a museum. Heavy, important, and indoor \u2014 right by Inwangsan so you pair them.'}),
+  A({day:7, slot:'afternoon', time:'15:30', cat:'shopping', book:'walk', cost:150, title:'Seongsu boutiques + Amazing Brewing',
+     desc:'Seoul\'s Brooklyn. Korean indie designers and brand pop-ups, then craft-beer flights at Amazing Brewing with fried chicken. Locals, not tourists. Pre-game for the big one.',
+     tip:'$150 is a spend budget. Mostly indoor, good in rain.'}),
+  A({day:7, slot:'night', time:'22:00', cat:'nightlife', book:'walk', cost:120, title:'BIG Friday night out',
+     desc:'Peak night #1. Itaewon (Soap, Cakeshop) or a Hongdae superclub. This is the blowout. Dress decent \u2014 no slides, door staff enforce it. Roll deep with the hostel crew.'}),
+  A({day:7, slot:'night', time:'02:00', cat:'food', book:'walk', cost:20, title:'Gwangjang Market 2am run',
+     desc:'Still-drunk food stop. Mung-bean pancakes, raw beef, makgeolli on a plastic stool with ajummas who have run the stall for decades.'}),
+
+  // DAY 8 — Seoraksan overnight (pension bed included)
+  A({day:8, slot:'morning', time:'08:00', cat:'adventure', book:'now', cost:200, pp:true, title:'Seoraksan via ferrata (overnight)',
+     desc:'Your one night out of Seoul. Cliff scrambling on steel cables, Ulsanbawi rock, then mountain Korean BBQ, a bonfire and soju with the group. The real adventure of the trip.',
+     tip:'Adventure Korea runs scheduled group trips. BOOK THIS WEEK, July fills. ~$200 each AND the mountain-pension bed (night 8) is included \u2014 so that night is sorted. Have a rain plan: the operator may reroute, check before you pay.'}),
+  A({day:8, slot:'night', time:'19:00', cat:'nightlife', book:'walk', cost:0, title:'Mountain BBQ + bonfire + soju',
+     desc:'Included in the tour. Fire, BBQ, soju, and a crew of other travellers in the mountains. Sleep in the pension.'}),
+
+  // DAY 9 — Return + tower + seafood + spa reset (lighter, Lotte Tower moved here)
+  A({day:9, slot:'afternoon', time:'15:00', cat:'logistics', book:'walk', cost:0, title:'Return to Seoul',
+     desc:'Back in the city mid-afternoon, drop bags at the hostel. Easier-paced evening to recharge before the final push.'}),
+  A({day:9, slot:'evening', time:'18:30', cat:'culture', book:'now', cost:30, pp:true, title:'Lotte World Tower at sunset',
+     desc:'555m up, glass floor on Floor 118, city going gold to neon. Moved here so it gets its own moment instead of being crammed into the mega day.',
+     tip:'Book a Seoul Sky sunset slot \u2014 weekends sell out. ~$30 each. Indoors at the top, so rain just means moodier clouds. Right by Jamsil if you did the baseball there.'}),
+  A({day:9, slot:'evening', time:'20:00', cat:'food', book:'walk', cost:60, title:'Noryangjin Fish Market',
+     desc:'Pick live seafood downstairs (king crab, abalone, octopus), carry it up, a restaurant cooks it on the spot while you hammer soju. Loud, messy, local.'}),
+  A({day:9, slot:'night', time:'22:30', cat:'chill', book:'walk', cost:50, title:'Dragon Hill Spa jjimjilbang',
+     desc:'24h Korean bathhouse \u2014 hot saunas, ice plunge, sleeping rooms, snack bar. The ultimate reset after Seoraksan and before the last two big days. You can even crash here overnight if the night runs away from you.',
+     tip:'Perfect rainy-night move and a recovery cheat code.'}),
+
+  // DAY 10 — Surf + yacht (also the Bukhansan rain-backup morning)
+  A({day:10, slot:'morning', time:'09:00', cat:'adventure', book:'now', cost:120, pp:true, title:'Wave Park surf + sunset yacht',
+     desc:'World\'s largest artificial surf pool \u2014 up to 25 waves an hour, English lessons available. Weekday means fewer crowds. Combo ends with a sunset yacht at Jeongok Port.',
+     tip:'Shuttle from Hongik Univ Station. Book on Trazy/Klook a week ahead. ~$120 each. It is a wave POOL so rain barely matters. If Day 4 got rained out, swap this clear morning for the Bukhansan hike.'}),
+  A({day:10, slot:'night', time:'22:00', cat:'nightlife', book:'walk', cost:40, title:'Pojangmacha + chill Hongdae night',
+     desc:'Lower-key night to save the legs for the finale \u2014 orange-tarp street tents, soju, fishcake skewers, plastic stools. A Korean drinking institution.'}),
+
+  // DAY 11 — Mega day + finale (Lotte Tower removed, ends on the send-off)
+  A({day:11, slot:'morning', time:'08:30', cat:'adventure', book:'now', cost:150, pp:true, title:'Nami / Gapyeong adventure day',
+     desc:'The stacked one. Kalbong Mountain zipline (8 courses), zipwire into Nami Island, bungee at Gapyeong, Gangchon rail bike through the light tunnels, dakgalbi in Chuncheon. Back to Seoul by early evening.',
+     tip:'Book the Kalbong zipline ahead; bungee and rail bike are walk-in. ~$150 each. Rain backup built in \u2014 the rail bike and Nami still run wet; if the zipline/bungee close, lean into Nami + rail bike + dakgalbi.'}),
+  A({day:11, slot:'night', time:'22:00', cat:'nightlife', book:'walk', cost:120, title:'FINAL blowout night',
+     desc:'Peak night #2 and the send-off. Back from Gapyeong, regroup with the crew, hit wherever felt best all trip. Last call in Seoul \u2014 make it count.'}),
+
+  // DAY 12 — Departure
+  A({day:12, slot:'morning', time:'09:00', cat:'food', book:'walk', cost:20, title:'Last salt bread breakfast',
+     desc:'One more hot salt bread or a street breakfast before you pack out.'}),
+  A({day:12, slot:'afternoon', time:'11:00', cat:'logistics', book:'walk', cost:25, title:'AREX to Incheon + tax refund',
+     desc:'Leave Hongdae by ~11am for the 15:55 flight. AREX from Hongik Univ / Seoul Station to Incheon is fast and frequent. Hit the airport tax-refund counter with receipts, passport and unused goods BEFORE check-in.',
+     tip:'Check-in closes ~13:25 \u2014 be heading airside by 13:00. AREX beats the bus on a flight day (no traffic).'}),
+];
+
+// Flex pool (day:null)
+let flex = [
+  A({day:null, slot:'afternoon', time:'13:00', cat:'adventure', book:'now', cost:150, pp:true, title:'Han River jet ski + e-foiling',
+     desc:'Back-to-back jet ski and electric hydrofoil on the Han at Ttukseom, skyline behind you. You wanted this \u2014 drop it on any free, clear morning (or swap it in for another activity). ~$150 each.'}),
+  A({day:null, slot:'afternoon', time:'14:00', cat:'culture', book:'twk', cost:60, title:'Escape Room \u00b7 Ongyi\'s Dream',
+     desc:'Best English-accessible escape room in Seoul, Korean-culture narrative, 65 mins, puzzle-dense. Great rainy-day slot before a Hongdae night out.'}),
+  A({day:null, slot:'afternoon', time:'15:00', cat:'adventure', book:'walk', cost:35, title:'Bouldering \u00b7 The Climb Hongdae',
+     desc:'Seoul\'s largest climbing gym, social scene at night. Day pass, walk in. Indoor \u2014 a fun wet-day burner.'}),
+  A({day:null, slot:'morning', time:'08:00', cat:'adventure', book:'walk', cost:15, title:'Bugaksan military-zone hike',
+     desc:'Seoul City Wall trail closed 54 years as a military zone, reopened 2022. Register with soldiers at the gate, spot the pine with 15 bullet holes from a North Korean infiltration. Clear mornings only.'}),
+  A({day:null, slot:'night', time:'01:00', cat:'chill', book:'walk', cost:10, title:'PC bang at 3am',
+     desc:'Post-club gaming cafe. Order ramyeon, vibe, surrounded by Koreans doing the same. ~$2/hr. Authentically local and bone-dry in a storm.'}),
+  A({day:null, slot:'night', time:'21:00', cat:'nightlife', book:'walk', cost:40, title:'Pojangmacha street tents',
+     desc:'Orange-tarp street-tent bars. Soju, fishcake skewers, soup, plastic stools. A Korean drinking institution.'}),
+  A({day:null, slot:'afternoon', time:'16:00', cat:'culture', book:'walk', cost:10, title:'BB gun \u00b7 Hongdae street',
+     desc:'Walk-in BB gun range, ~$5 a session, digital scoreboard. Competitive filler between two mates. Indoor.'}),
+];
+
+// ---- State ----
+let curDay = 1;
+let view = 'itinerary';
+let activeFilters = new Set(Object.keys(CATS));
+let moveTarget = null, moveDay = null, moveSlot = null, moveFromFlex = false;
+
+// ===================== CLOUD SYNC CONFIG =====================
+// Paste the two values from your free jsonbin.io account here, then host
+// the file (GitHub Pages). Same file on every device = same live data.
+const JSONBIN_BIN_ID = '6a437fb5f5f4af5e294644a1';
+const JSONBIN_KEY    = '$2a$10$1W/X5Vo0pnIBztMD.hNHEuzkdp1HuPSK26YkShmZ2KF4KeQLmAghK';
+// ============================================================
+
+const STORE_KEY = 'seoul_itin_v2';
+let _saveTimer = null, _saveSeq = 0, _ready = false;
+const _hasLocal = !!(window.storage && window.storage.set && window.storage.get);
+const _hasCloud = JSONBIN_BIN_ID && JSONBIN_KEY
+  && JSONBIN_BIN_ID.indexOf('PASTE') !== 0 && JSONBIN_KEY.indexOf('PASTE') !== 0;
+const _cloudURL = 'https://api.jsonbin.io/v3/b/' + JSONBIN_BIN_ID;
+const _cloudHeaders = { 'Content-Type': 'application/json', 'X-Master-Key': JSONBIN_KEY, 'X-Bin-Versioning': 'false' };
+
+function setSaveStatus(s){
+  const el = document.getElementById('saveStatus'); if(!el) return;
+  const map = {pending:['pending','Saving\u2026'], saving:['saving','Saving\u2026'],
+               synced:['saved','Synced \u2713'], saved:['saved','Saved \u2713'],
+               error:['error','Not saved \u00b7 retry'], local:['local','Local only'],
+               off:['off','No sync \u00b7 add keys'], idle:['idle','Saved']};
+  const [cls,txt] = map[s] || map.idle;
+  el.className = 'save-pill ' + cls;
+  el.textContent = txt;
+}
+
+function snapshotObj(){
+  return { v:3, updatedAt: Date.now(), acts, flex, uid, checkState, curDay, view, filters:[...activeFilters] };
+}
+function snapshot(){ return JSON.stringify(snapshotObj()); }
+
+function applyState(d){
+  if(!d || typeof d !== 'object') return false;
+  if(Array.isArray(d.acts) && Array.isArray(d.flex)){ acts = d.acts; flex = d.flex; uid = d.uid || uid; }
+  if(d.checkState && typeof d.checkState === 'object') checkState = d.checkState;
+  if(typeof d.curDay === 'number') curDay = d.curDay;
+  if(typeof d.view === 'string') view = d.view;
+  if(Array.isArray(d.filters) && d.filters.length) activeFilters = new Set(d.filters);
+  return true;
+}
+
+async function doSave(){
+  const seq = ++_saveSeq;
+  const str = snapshot();
+  // Local mirror first (best effort; never the source of truth across devices).
+  if(_hasLocal){ try{ await window.storage.set(STORE_KEY, str, false); }catch(e){} }
+  if(!_hasCloud){ setSaveStatus(_hasLocal ? 'local' : 'off'); return _hasLocal; }
+  setSaveStatus('saving');
+  let ok = false;
+  for(let i=0; i<3 && !ok; i++){
+    try{
+      const r = await fetch(_cloudURL, { method:'PUT', headers:_cloudHeaders, body:str });
+      ok = r.ok;
+    }catch(e){}
+    if(!ok && i < 2) await new Promise(res=>setTimeout(res, 400*(i+1)));
+  }
+  if(seq !== _saveSeq) return ok;            // a newer save superseded this one
+  setSaveStatus(ok ? 'synced' : 'error');
+  return ok;
+}
+// Debounced save for rapid actions; always persists the latest full state.
+function save(){
+  if(!_ready) return;
+  setSaveStatus('pending');
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(doSave, 250);
+}
+// Force an immediate save (manual tap, or tab hide/close flush).
+async function saveNow(){ clearTimeout(_saveTimer); return doSave(); }
+
+async function load(){
+  // Cloud is the cross-device source of truth; fall back to the local mirror.
+  if(_hasCloud){
+    try{
+      const r = await fetch(_cloudURL + '/latest', { headers:{ 'X-Master-Key': JSONBIN_KEY } });
+      if(r.ok){ const j = await r.json(); if(applyState(j.record)) return; }
+    }catch(e){}
+  }
+  if(_hasLocal){
+    try{ const r = await window.storage.get(STORE_KEY, false); if(r && r.value) applyState(JSON.parse(r.value)); }catch(e){}
+  }
+}
+
+// Manually pull the newest version saved from any device.
+async function pullCloud(){
+  if(!_hasCloud){ alert('Cloud sync is not set up yet \u2014 paste your jsonbin.io Bin ID and key into the file, then host it.'); return; }
+  setSaveStatus('saving');
+  try{
+    const r = await fetch(_cloudURL + '/latest', { headers:{ 'X-Master-Key': JSONBIN_KEY } });
+    if(r.ok){ const j = await r.json(); applyState(j.record); renderAll(); setView(view); setSaveStatus('synced'); }
+    else setSaveStatus('error');
+  }catch(e){ setSaveStatus('error'); }
+}
+
+// Download a full backup file you control.
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(snapshotObj(), null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'seoul-trip-backup.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+// Restore from a backup file, then save it back up.
+function importJSON(input){
+  const f = input.files && input.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = ()=>{
+    try{ const d = JSON.parse(rd.result); if(applyState(d)){ renderAll(); setView(view); save(); } }
+    catch(e){ alert('That file could not be read as a trip backup.'); }
+  };
+  rd.readAsText(f); input.value = '';
+}
+
+// Catch the last change if the tab is hidden or closed before the debounce fires.
+document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState === 'hidden') saveNow(); });
+window.addEventListener('pagehide', ()=>{ saveNow(); });
+
+// ---- Helpers ----
+function fmtTime(t){
+  const [h,m] = t.split(':').map(Number);
+  const ap = h<12?'AM':'PM'; let hh = h%12; if(hh===0) hh=12;
+  return {hm:hh+':'+String(m).padStart(2,'0'), ap};
+}
+function dayCost(d){ return acts.filter(a=>a.day===d).reduce((s,a)=>s+((a.cost||0)*(a.pp?2:1)),0); }
+function grandCost(){ return acts.reduce((s,a)=>s+((a.cost||0)*(a.pp?2:1)),0); }
+function slotOrder(k){ return SLOTS.findIndex(s=>s.k===k); }
+function sortActs(arr){
+  return arr.slice().sort((a,b)=> slotOrder(a.slot)-slotOrder(b.slot) || a.time.localeCompare(b.time));
+}
+
+// ---- Render: rail ----
+function renderRail(){
+  const rail = document.getElementById('rail');
+  rail.innerHTML = DAYS.map(d=>`
+    <button class="daychip ${d.n===curDay?'on':''}" onclick="goDay(${d.n})">
+      <div class="dn">D${d.n}</div>
+      <div class="dd">${d.dow} ${d.date.replace('Jul ','')}</div>
+      <div class="dc">$${dayCost(d.n)}</div>
+    </button>`).join('');
+  const on = rail.querySelector('.daychip.on');
+  if(on) on.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+}
+
+// ---- Render: filters ----
+function renderFilters(){
+  const f = document.getElementById('filters');
+  f.innerHTML = Object.entries(CATS).map(([k,v])=>`
+    <button class="fchip ${activeFilters.has(k)?'':'off'}" onclick="toggleFilter('${k}')">
+      <span class="dot" style="background:${v.c}"></span>${v.nm}
+    </button>`).join('');
+}
+function toggleFilter(k){
+  if(activeFilters.has(k)) activeFilters.delete(k); else activeFilters.add(k);
+  if(activeFilters.size===0) activeFilters = new Set(Object.keys(CATS));
+  renderFilters(); renderItinerary(); save();
+}
+
+// ---- Render: itinerary ----
+function renderItinerary(){
+  const wrap = document.getElementById('itineraryView');
+  const d = DAYS.find(x=>x.n===curDay);
+  let html = `
+    <div class="dayhead">
+      <div class="l">
+        <div class="eyebrow">${d.dow} · ${d.date} · ${d.tag}</div>
+        <h2>Day ${d.n}</h2>
+      </div>
+      <div class="r"><div class="lbl">Day est.</div><div class="v">$${dayCost(d.n)}</div></div>
+    </div>`;
+
+  SLOTS.forEach(s=>{
+    const items = sortActs(acts.filter(a=>a.day===curDay && a.slot===s.k && activeFilters.has(a.cat)));
+    const anyInSlot = acts.some(a=>a.day===curDay && a.slot===s.k);
+    if(!anyInSlot && items.length===0){
+      html += `
+        <div class="slot">
+          <div class="slot-h"><span class="t">${s.t}</span><span class="ln"></span>
+            <button class="slot-add" onclick="openCreate(${curDay},'${s.k}')">+ add</button></div>
+        </div>`;
+      return;
+    }
+    html += `<div class="slot">
+      <div class="slot-h"><span class="t">${s.t}</span><span class="ln"></span>
+        <button class="slot-add" onclick="openCreate(${curDay},'${s.k}')">+ add</button></div>`;
+    html += items.map(cardHTML).join('');
+    html += `</div>`;
+  });
+
+  wrap.innerHTML = html;
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function onNoteInput(id, el){
+  const a = acts.find(x=>x.id===id) || flex.find(x=>x.id===id);
+  if(!a) return;
+  a.note = el.value;
+  el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px';
+  save();
+}
+function cardHTML(a){
+  const c = CATS[a.cat]; const t = fmtTime(a.time); const b = BADGE[a.book];
+  return `
+    <div class="card" id="${a.id}" onclick="toggleCard('${a.id}')">
+      <div class="bar" style="background:${c.c}"></div>
+      <div class="card-main">
+        <div class="card-time">${t.hm}<span class="ampm">${t.ap}</span></div>
+        <div class="card-body">
+          <div class="card-cat"><span class="dot" style="background:${c.c}"></span><span class="nm">${c.nm}</span></div>
+          <div class="card-title">${a.title}</div>
+          <div class="card-meta">
+            <span class="badge ${b.cls}">${b.t}</span>
+            <span class="card-cost ${a.cost?'':'free'}">${a.cost?'$'+a.cost+(a.pp?' pp':''):'Free'}</span>
+          </div>
+        </div>
+        <div class="chev">›</div>
+      </div>
+      <div class="card-detail">
+        <div class="detail-inner">
+          <p>${a.desc}</p>
+          ${a.tip?`<div class="tip"><b>Tip.</b> ${a.tip}</div>`:''}
+          <div class="note-wrap" onclick="event.stopPropagation()">
+            <label class="note-lbl">Your notes</label>
+            <textarea class="note-field" placeholder="Add a note… (saves automatically)" oninput="onNoteInput('${a.id}', this)">${a.note?escHtml(a.note):''}</textarea>
+          </div>
+          <div class="acts">
+            <button class="act edit" onclick="event.stopPropagation();openEdit('${a.id}')">Edit</button>
+            <button class="act move" onclick="event.stopPropagation();openMove('${a.id}')">Move</button>
+            <button class="act rem" onclick="event.stopPropagation();removeAct('${a.id}')">To ideas</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function toggleCard(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle('open');
+  if(el.classList.contains('open')){
+    const ta = el.querySelector('.note-field');
+    if(ta){ ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+  }
+}
+
+// ---- Ideas view ----
+function renderIdeas(){
+  const wrap = document.getElementById('ideasView');
+  let html = `<div class="section-card">
+    <h3>Flex ideas</h3>
+    <div class="desc">Unscheduled extras. Tap add to drop one into any day and time. Anything you remove from a day lands back here.</div>`;
+  if(flex.length===0){
+    html += `<div class="empty">Nothing parked here. Remove an activity from a day and it shows up here.</div>`;
+  } else {
+    html += sortActs(flex).map(a=>{
+      const c = CATS[a.cat]; const b = BADGE[a.book];
+      return `<div class="flex-item">
+        <div class="bar" style="background:${c.c}"></div>
+        <div class="fi-body">
+          <div class="fi-title">${a.title}</div>
+          <div class="fi-sub">${c.nm} · ${b.t} · ${a.cost?'$'+a.cost+(a.pp?' pp':''):'Free'}</div>
+        </div>
+        <button class="fi-add" onclick="openMove('${a.id}',true)">Add</button>
+      </div>`;
+    }).join('');
+  }
+  html += `</div>`;
+  wrap.innerHTML = html;
+}
+
+// ---- Checklist view ----
+let checkState = {};
+function renderChecklist(){
+  const wrap = document.getElementById('checklistView');
+  const groups = [
+    {key:'now', dot:'var(--urgent)', t:'Book this week'},
+    {key:'twk', dot:'var(--warn)', t:'Book ~2 weeks out'},
+    {key:'booked', dot:'var(--ok)', t:'Already sorted'},
+    {key:'walk', dot:'var(--chill)', t:'Walk-in, no booking'},
+  ];
+  const all = acts.concat(flex);
+  let html = `<div style="padding:14px 4px 4px;"><h2 style="font-size:22px;">Bookings</h2>
+    <div style="font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:4px;">Tap to check off. Red first.</div></div>`;
+  groups.forEach(g=>{
+    let items = all.filter(a=>a.book===g.key);
+    // de-dupe identical titles
+    const seen = new Set(); items = items.filter(a=>{ if(seen.has(a.title))return false; seen.add(a.title); return true; });
+    if(items.length===0) return;
+    html += `<div class="ck-group"><div class="gh"><span class="g-dot" style="background:${g.dot}"></span><span class="g-t">${g.t}</span></div>`;
+    items.forEach(a=>{
+      const done = checkState[a.title];
+        html += `<div class="ck-row ${done?'done':''}" onclick="toggleCheck('${a.title.replace(/'/g,"\\'")}')">
+        <div class="ck-box">${done?'✓':''}</div>
+        <div class="ck-body"><div class="ck-title">${a.title}</div><div class="ck-where">${dloc(a)}</div></div>
+        <div class="ck-cost">${a.cost?'$'+a.cost+(a.pp?' pp':''):''}</div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+function dloc(a){ return a.day?('Day '+a.day+' · '+DAYS.find(d=>d.n===a.day).date):'Flex idea'; }
+function toggleCheck(title){ checkState[title]=!checkState[title]; renderChecklist(); save(); }
+
+// ---- Move / Add ----
+function openMove(id, fromFlex=false){
+  moveTarget = id; moveFromFlex = fromFlex;
+  const src = fromFlex ? flex.find(a=>a.id===id) : acts.find(a=>a.id===id);
+  moveDay = src.day || curDay; moveSlot = src.slot;
+  const sheet = document.getElementById('sheet');
+  sheet.innerHTML = `
+    <h3>${fromFlex?'Add to a day':'Move activity'}</h3>
+    <div class="s-sub">${src.title}</div>
+    <div class="m-label">Day</div>
+    <div class="m-days" id="mDays">${DAYS.map(d=>`
+      <button class="m-day ${d.n===moveDay?'sel':''}" onclick="pickDay(${d.n})">
+        <div class="n">${d.n}</div><div class="d">${d.date.replace('Jul ','Jul ')}</div></button>`).join('')}</div>
+    <div class="m-label">Time of day</div>
+    <div class="m-slots" id="mSlots">${SLOTS.map(s=>`
+      <button class="m-slot ${s.k===moveSlot?'sel':''}" onclick="pickSlot('${s.k}')">${s.t}</button>`).join('')}</div>
+    <button class="m-confirm" id="mConfirm" onclick="confirmMove()">${fromFlex?'Add to Day '+moveDay:'Move here'}</button>
+    <button class="m-cancel" onclick="closeSheet()">Cancel</button>`;
+  document.getElementById('scrim').classList.add('on');
+}
+function pickDay(n){ moveDay=n; document.querySelectorAll('#mDays .m-day').forEach((el,i)=>el.classList.toggle('sel',DAYS[i].n===n));
+  const c=document.getElementById('mConfirm'); if(moveFromFlex)c.textContent='Add to Day '+n; }
+function pickSlot(k){ moveSlot=k; document.querySelectorAll('#mSlots .m-slot').forEach((el,i)=>el.classList.toggle('sel',SLOTS[i].k===k)); }
+function confirmMove(){
+  if(moveFromFlex){
+    const idx = flex.findIndex(a=>a.id===moveTarget);
+    const item = flex.splice(idx,1)[0];
+    item.day = moveDay; item.slot = moveSlot;
+    acts.push(item);
+    curDay = moveDay; view='itinerary';
+  } else {
+    const a = acts.find(x=>x.id===moveTarget);
+    a.day = moveDay; a.slot = moveSlot;
+    curDay = moveDay;
+  }
+  closeSheet(); save(); renderAll();
+}
+function removeAct(id){
+  const idx = acts.findIndex(a=>a.id===id);
+  if(idx<0) return;
+  const item = acts.splice(idx,1)[0];
+  item.day = null;
+  flex.push(item);
+  save(); renderAll();
+}
+function openIdeasFor(day, slot){
+  curDay = day; setView('ideas');
+}
+function closeSheet(){ document.getElementById('scrim').classList.remove('on'); moveTarget=null; editTarget=null; editIsNew=false; }
+
+// ---- Create / edit an activity (incl. manual time) ----
+let editTarget = null, editIsNew = false;
+function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+function openCreate(day, slot){
+  editIsNew = true; editTarget = null; moveFromFlex = false;
+  moveDay = day || curDay; moveSlot = slot || 'morning';
+  renderEditor({title:'', time:'12:00', cat:'culture', book:'walk', cost:0, pp:false, desc:''});
+}
+function openEdit(id){
+  editIsNew = false; editTarget = id; moveFromFlex = false;
+  const a = acts.find(x=>x.id===id) || flex.find(x=>x.id===id);
+  if(!a) return;
+  moveDay = a.day || curDay; moveSlot = a.slot;
+  renderEditor(a);
+}
+function renderEditor(a){
+  const catOpts  = Object.entries(CATS).map(([k,v])=>`<option value="${k}" ${k===a.cat?'selected':''}>${v.nm}</option>`).join('');
+  const bookOpts = Object.entries(BADGE).map(([k,v])=>`<option value="${k}" ${k===a.book?'selected':''}>${v.t}</option>`).join('');
+  const sheet = document.getElementById('sheet');
+  sheet.innerHTML = `
+    <h3>${editIsNew?'New activity':'Edit activity'}</h3>
+    <div class="s-sub">${editIsNew?'Add your own stop to the trip':'Change the time, details or slot'}</div>
+    <div class="ef-row"><label class="ef-label">Title</label>
+      <input id="efTitle" class="ef-input" type="text" placeholder="e.g. Rooftop sunset drinks" value="${a.title?escAttr(a.title):''}"></div>
+    <div class="ef-row ef-two">
+      <div><label class="ef-label">Time</label><input id="efTime" class="ef-input" type="time" value="${a.time||'12:00'}" oninput="efSyncSlotFromTime()"></div>
+      <div><label class="ef-label">Category</label><select id="efCat" class="ef-select">${catOpts}</select></div>
+    </div>
+    <div class="ef-row ef-two">
+      <div><label class="ef-label">Cost ($)</label><input id="efCost" class="ef-input" type="number" min="0" step="1" placeholder="0" value="${a.cost?a.cost:''}"></div>
+      <div><label class="ef-label">Booking</label><select id="efBook" class="ef-select">${bookOpts}</select></div>
+    </div>
+    <label class="ef-check"><input id="efPP" type="checkbox" ${a.pp?'checked':''}> Price is per person</label>
+    <div class="ef-row" style="margin-top:13px;"><label class="ef-label">Details (optional)</label>
+      <textarea id="efDesc" class="ef-area" placeholder="What is the plan?">${a.desc?escHtml(a.desc):''}</textarea></div>
+    <div class="m-label">Day</div>
+    <div class="m-days" id="mDays">${DAYS.map(d=>`
+      <button class="m-day ${d.n===moveDay?'sel':''}" onclick="pickDay(${d.n})"><div class="n">${d.n}</div><div class="d">${d.date}</div></button>`).join('')}</div>
+    <div class="m-label">Time of day</div>
+    <div class="m-slots" id="mSlots">${SLOTS.map(s=>`
+      <button class="m-slot ${s.k===moveSlot?'sel':''}" onclick="pickSlot('${s.k}')">${s.t}</button>`).join('')}</div>
+    <button class="m-confirm" id="efConfirm" onclick="confirmEdit()">${editIsNew?'Add to itinerary':'Save changes'}</button>
+    ${editIsNew?`<button class="ef-link" onclick="openIdeasFor(${moveDay},'${moveSlot}')">Browse flex ideas instead</button>`:''}
+    <button class="m-cancel" onclick="closeSheet()">Cancel</button>`;
+  document.getElementById('scrim').classList.add('on');
+  if(editIsNew) setTimeout(()=>{ const t=document.getElementById('efTitle'); if(t) t.focus(); }, 60);
+}
+function efSyncSlotFromTime(){
+  const v = document.getElementById('efTime').value;
+  if(!/^\d{2}:\d{2}$/.test(v)) return;
+  const h = parseInt(v.slice(0,2),10);
+  pickSlot(h<12?'morning':h<17?'afternoon':h<21?'evening':'night');
+}
+function confirmEdit(){
+  const tEl = document.getElementById('efTitle');
+  const title = (tEl.value||'').trim();
+  if(!title){ tEl.focus(); tEl.style.borderColor='var(--accent)'; return; }
+  const cat = document.getElementById('efCat').value;
+  let time = document.getElementById('efTime').value || '12:00';
+  if(!/^\d{2}:\d{2}$/.test(time)) time = '12:00';
+  const cv = parseFloat(document.getElementById('efCost').value);
+  const cost = (isNaN(cv) || cv < 0) ? 0 : Math.round(cv);
+  const pp = document.getElementById('efPP').checked;
+  const book = document.getElementById('efBook').value;
+  const desc = (document.getElementById('efDesc').value||'').trim();
+  if(editIsNew){
+    acts.push(A({day:moveDay, slot:moveSlot, time, cat, book, cost, pp, title, desc, note:''}));
+    curDay = moveDay; view = 'itinerary';
+  } else {
+    const a = acts.find(x=>x.id===editTarget) || flex.find(x=>x.id===editTarget);
+    if(a){
+      a.title=title; a.cat=cat; a.time=time; a.cost=cost; a.pp=pp; a.book=book; a.desc=desc;
+      if(a.day!==null){ a.day=moveDay; a.slot=moveSlot; curDay=moveDay; } else { a.slot=moveSlot; }
+    }
+  }
+  closeSheet(); save();
+  if(view!=='itinerary') setView('itinerary'); else renderAll();
+}
+
+
+// ---- Nav ----
+function goDay(n){ curDay=n; if(view!=='itinerary')setView('itinerary'); renderAll(); save(); }
+function stepDay(dir){
+  if(view!=='itinerary'){ setView('itinerary'); }
+  curDay = Math.min(12, Math.max(1, curDay+dir)); renderAll(); save();
+}
+function setView(v){
+  view=v;
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.toggle('on', b.dataset.view===v));
+  document.getElementById('itineraryView').classList.toggle('hidden', v!=='itinerary');
+  document.getElementById('ideasView').classList.toggle('hidden', v!=='ideas');
+  document.getElementById('checklistView').classList.toggle('hidden', v!=='checklist');
+  document.getElementById('filters').style.display = v==='itinerary'?'flex':'none';
+  document.getElementById('rail').style.display = v==='itinerary'?'flex':'none';
+  if(v==='ideas') renderIdeas();
+  if(v==='checklist') renderChecklist();
+  window.scrollTo({top:0, behavior:'smooth'});
+  save();
+}
+
+function renderTotals(){
+  document.getElementById('grandTotal').textContent = '$'+grandCost().toLocaleString();
+  document.getElementById('ppTotal').textContent = '$'+Math.round(grandCost()/2).toLocaleString()+' pp';
+}
+function renderAll(){ renderRail(); renderFilters(); renderItinerary(); renderTotals(); }
+
+// ---- Boot ----
+(async function(){
+  await load();
+  renderAll();
+  setView(view);                 // restore the view you were last on (syncs nav too)
+  _ready = true;                 // saves only fire for real user actions from here
+  setSaveStatus(_hasCloud ? 'synced' : (_hasLocal ? 'idle' : 'off'));
+})();
+</script>
+</body>
+</html>
